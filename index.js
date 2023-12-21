@@ -1,6 +1,8 @@
 const express = require('express')
+const path = require('path');
 const bodyParser = require('body-parser')
 const app = express()
+const db = require('./queries')
 const port = 3000
 
 app.use(bodyParser.json())
@@ -10,10 +12,29 @@ app.use(
   })
 )
 
-app.get('/', (request, response) => {
-    response.json({ info: 'Node.js, Express, and Postgres API' })
-  })
+//app.get('/', (request, response) => {
+//  response.json({ info: 'Node.js, Express, and Postgres API' })
+//})
+
+
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname, '/index.html'));
+  });
+
+/*app.get("/posts", async (req, res) => {
+    const rows = await db.getPosts();
+    res.setHeader("content-type", "application/json")
+    res.send(JSON.stringify(rows))
+})*/
+
+app.get('/posts', db.getPosts)
+/*
+app.get('/users', db.getUsers)
+app.get('/users/:id', db.getUserById)
+app.post('/users', db.createUser)
+app.put('/users/:id', db.updateUser)
+app.delete('/users/:id', db.deleteUser)*/
 
 app.listen(port, () => {
-    console.log(`App running on port ${port}.`)
+  console.log(`App running on port ${port}.`)
 })
