@@ -1,3 +1,11 @@
+/**
+ * 
+ * Code for the server functions, using express
+ * Code calls functions from queries.js and also has all the get and post reqest handeling
+ * Made by Nividh Singh
+ * 
+ */
+
 const express = require('express')
 const path = require('path');
 const bodyParser = require('body-parser')

@@ -1,3 +1,12 @@
+/**
+ * 
+ * File for the all the query functions
+ * Made by Nividh Singh
+ * 
+ */
+
+
+
 const Pool = require('pg').Pool
 const pool = new Pool({
   user: 'postgres',
