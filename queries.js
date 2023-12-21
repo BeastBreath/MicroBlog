@@ -36,6 +36,22 @@ const getPostsByUser = (request, response) => {
     })
 }
 
+const createPost = (request, response) => {
+    
+    const {title, msg} = request.body
+
+    console.log(request.body)
+
+    pool.query('INSERT INTO blogposts (title, msg, username) VALUES ($1, $2, $3)',
+    [title, msg, request.cookies.username], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(201).send('User added')
+        //response.cookie('username', username).redirect('/')
+    })
+}
+
 const createUser = (request, response) => {
     
     console.log("In this function")
@@ -62,6 +78,25 @@ const loginUser = (request, response) => {
     console.log(username + " " + passwd)
     
     pool.query("SELECT * FROM users WHERE username=$1 AND passwd=$2", [username, passwd], (error, results, fields) => {
+        // If there is an issue with the query, output the error
+        if (error) throw error;
+        // If the account exists
+        if (results.rows.length > 0) {
+            // Authenticate the user
+            response.cookie('username', username).redirect('/home');
+        } else {
+            console.log(results)
+            response.send('Incorrect Username and/or Password!');
+        }			
+        response.end();
+    });
+}
+
+const updateUser = (request, response) => {
+
+    const {head, aboutme} = request.body
+
+    pool.query("UPDATE users SET head=$1 AND aboutme=$2 WHERE username=$3", [head, aboutme, request.cookie.username], (error, results, fields) => {
         // If there is an issue with the query, output the error
         if (error) throw error;
         // If the account exists
@@ -107,6 +142,8 @@ const deleteUser = (request, response) => {
 module.exports = {
     getPosts,
     getPostsByUser,
+    createPost,
     createUser,
-    loginUser
+    loginUser,
+    updateUser
 }
