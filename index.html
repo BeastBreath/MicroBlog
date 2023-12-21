@@ -39,6 +39,14 @@ body {margin:0;}
 </head>
 <body>
 
+
+
+<ol id="postList">
+
+
+</ol>
+
+
 <script>
 
     readPosts();
@@ -46,19 +54,23 @@ body {margin:0;}
 
         console.log("Test console log")
 
-        const postList = document.getElementById("postList")
+        const listEl = document.querySelector('ol');
+        console.log(listEl)
+
+        const postList = document.getElementById("#postList")
 
         /* fetch('http://localhost:3000/posts')
             .then((response) => response.json())
             .then((json) => console.log(json)); */
 
         const response = await fetch("http://localhost:3000/posts")
-
-        console.log(response)
-
-        myObj = JSON.parse(this.response);
-
-        const posts = response.json()
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(post=> {
+                    console.log(post.title)
+                    listEl.insertAdjacentHTML('beforeend', '<li>' + post.title + '</li')
+                })
+            })
 
         
 
@@ -69,11 +81,6 @@ body {margin:0;}
         })*/
 
 
-        posts.then(function(result) {
-            console.log(result[0]) // "Some User token"
-         })
-         
-         console.log(test)
         //console.log(posts)
 
 
@@ -92,28 +99,6 @@ body {margin:0;}
     }
     
 </script>
-
-<ul class="navbar-ul">
-  <li class="navbar-li"><a class="active" href="#home">Home</a></li>
-  <li class="navbar-li"><a href="#news">News</a></li>
-  <li class="navbar-li"><a href="#contact">Contact</a></li>
-  <li class="navbar-li"><a href="#about">About</a></li>
-</ul class=navbar>
-
-<ol id="postList">
-
-
-</ol>
-
-
-<div style="padding:20px;margin-top:30px;">
-    <ul>
-        <li><a class="active" href="#home">Home</a></li>
-        <li><a href="#news">News</a></li>
-        <li><a href="#contact">Contact</a></li>
-        <li><a href="#about">About</a></li>
-    </ul>
-</div>
 
 </body>
 </html>
