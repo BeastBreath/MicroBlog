@@ -22,7 +22,8 @@ const getPostsByUser = (request, response) => {
         if (error) {
             throw error
         }
-        response.status(200).cookie('username', username).json(results.rows)
+        response.status(200).json(results.rows)
+        
     })
 }
 
@@ -38,7 +39,8 @@ const createUser = (request, response) => {
         if (error) {
             throw error
         }
-        response.status(201).send('User added')
+        response.cookie('username', username).status(201).send('User added')
+        //response.cookie('username', username).redirect('/')
     })
 }
 /*

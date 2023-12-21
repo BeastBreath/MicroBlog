@@ -14,6 +14,11 @@ app.use(
     extended: true,
   })
 )
+app.use(function(req, res, next) {  
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 
 
 app.get('/posts', (request, response) => {
@@ -56,12 +61,13 @@ app.post('/signup', (req, res) => {
     db.createUser(req, res)
 
     let username = req.body.username;
-    let password = req.body.password;
+    let password = req.body.passwd;
     console.log("HERE")
     console.log(username + " " + password);
 
     //res.send("success")
     //Add code to add it to the db here
+    
 })
 
 app.post('/login', (req, res) => {
