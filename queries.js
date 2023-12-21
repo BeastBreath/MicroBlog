@@ -15,38 +15,33 @@ const getPosts = (request, response) => {
         response.status(200).json(results.rows)
     })
 }
-/*
-const getUsers = (request, response) => {
-  pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(200).json(results.rows)
-  })
-}
 
-const getUserById = (request, response) => {
-  const id = parseInt(request.params.id)
-
-  pool.query('SELECT * FROM users WHERE id = $1', [id], (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(200).json(results.rows)
-  })
+const getPostsByUser = (request, response) => {
+    const username = request.params.username
+    pool.query('SELECT * FROM blogposts WHERE username=$1', [username], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).cookie('username', username).json(results.rows)
+    })
 }
 
 const createUser = (request, response) => {
-  const { name, email } = request.body
+    
+    console.log("In this function")
+    const {username, passwd, hd, aboutme} = request.body
 
-  pool.query('INSERT INTO users (name, email) VALUES ($1, $2)', [name, email], (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(201).send(`User added with ID: ${results.insertId}`)
-  })
+    console.log(request.body)
+
+    pool.query('INSERT INTO users (username, passwd, head, aboutme) VALUES ($1, $2, $3, $4)',
+    [username, passwd, hd, aboutme], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(201).send('User added')
+    })
 }
-
+/*
 const updateUser = (request, response) => {
   const id = parseInt(request.params.id)
   const { name, email } = request.body
@@ -76,6 +71,8 @@ const deleteUser = (request, response) => {
 */
 module.exports = {
     getPosts,
+    getPostsByUser,
+    createUser
   /*getUsers,
   getUserById,
   createUser,

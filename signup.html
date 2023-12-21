@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+body {margin:0;}
+
+.navbar-ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+.navbar-li {
+  float: right;
+}
+
+.navbar-li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.navbar-li a:hover:not(.active) {
+  background-color: #111;
+}
+
+.navbar-li .active {
+  background-color: #00b4d8;
+}
+</style>
+</head>
+<body>
+
+
+    <ul class="navbar-ul">
+        <li class="navbar-li"><a class="active" href="#home">Sign Up</a></li>
+        <li class="navbar-li"><a href="#news">Log in</a></li>
+      </ul class=navbar>
+
+
+<div style="padding:20px;margin-top:30px;">
+
+    <form action="/signup/" method="post">
+        <!-- user input-->
+        Username:<br>
+        <input type="text" name="username" placeholder="Username" required><br><br>
+        Password:<br>
+        <input type="text" name="passwd" placeholder="Password" required><br><br> 
+        Header:<br>
+        <input type="text" name="head" placeholder="Header"><br><br> 
+        About Me:<br>
+        <textarea type="text" name="aboutme" placeholder="About Me" maxlength="500"></textarea><br><br> 
+        <!-- submit button -->
+        <input type="submit" value="signup">
+      </form>
+</div>
+
+</body>
+</html>
