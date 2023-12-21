@@ -21,32 +21,33 @@ app.use(function(req, res, next) {
 });
 
 
-app.get('/posts', (request, response) => {
+/*app.get('/posts', (request, response) => {
     
 })
 
 app.get('/', (request, response) => {
   response.json({ info: 'Node.js, Express, and Postgres API' })
   console.log('Cookies: ', request.cookies);
-})
+})*/
 
-app.get('/home', function(req, res) {
-    const username = req.query.username;
+app.get('/home', function(request, response) {
+    console.log('Cookies: ', request.cookies);
+    const username = request.cookies.username
 
-    res.send('<h1>' + username + '<h1>')
+    response.send('<h1>' + username + '<h1>')
     //res.send({'username': username})
 });
 
-app.get('/idkyet', function(req, res) {
+app.get('/idkyet', function(request, response) {
     res.render('register', {
         message: 'User registered!'
     });
   });
 
 
-//app.get('/', function(req, res) {
- //   res.sendFile(path.join(__dirname, '/index.html'));
-  //});
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname, '/index.html'));
+  });
 
 app.get('/login', function(req, res) {
     res.sendFile(path.join(__dirname, '/login.html'));
@@ -67,18 +68,16 @@ app.post('/signup', (req, res) => {
 
     //res.send("success")
     //Add code to add it to the db here
-    
+
 })
 
 app.post('/login', (req, res) => {
     let username = req.body.username;
-    let password = req.body.password;
-    console.log("HERE")
+    let password = req.body.passwd;
+    console.log("HERE2")
     console.log(username + " " + password);
 
-    res.cookie('username', username).send('cookie set'); //Sets name = express
-
-    res.send("success")
+    db.loginUser(req, res)
     //Add code to add it to the db here
 })
 

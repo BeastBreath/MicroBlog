@@ -4,6 +4,7 @@
 </head>
 <body>
 
+    <h1>{var}</h1>
 
     <ul class="navbar-ul">
         <li class="navbar-li"><a class="active" href="/signup">Sign Up</a></li>
@@ -34,13 +35,30 @@
         /* fetch('http://localhost:3000/posts')
             .then((response) => response.json())
             .then((json) => console.log(json)); */
-
+        
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+        
         const response = await fetch("http://localhost:3000/posts")
             .then(res => res.json())
             .then(data => {
                 data.forEach(post=> {
-                    console.log(post.title)
-                    listEl.insertAdjacentHTML('beforeend', '<li>' + post.title + '</li')
+                    console.log(post.username)
+                    console.log(getCookie("username"))
+                    if (post.username == getCookie("username")) {
+                        console.log(post.msg)
+                        const li = document.createElement("li")
+                        const a = document.createElement("a")
+                        a.textContent = post.title
+                        a.id = post.blogid
+                        a.setAttribute("href", "/post?" + post.blogid)
+                        li.appendChild(a)
+                        listEl.appendChild(li)
+                    }
+                    //listEl.insertAdjacentHTML('beforeend', '<li>' + post.title + '</li')
                 })
             })
 

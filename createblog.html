@@ -48,14 +48,14 @@ body {margin:0;}
 
 <div style="padding:20px;margin-top:30px;">
 
-    <form action="/login/" method="post">
+    <form action="/createblog/" method="post">
         <!-- user input-->
-        Username:<br>
-        <input type="text" name="username" placeholder="Username" required><br><br>
-        Password:<br>
-        <input type="text" name="passwd" placeholder="Password" required><br><br>
+        Title:<br>
+        <input type="text" name="title" placeholder="title" required><br><br>
+        Message:<br>
+        <textarea type="text" name="Message" placeholder="Message" maxlength="300"></textarea><br><br> 
         <!-- submit button -->
-        <input type="submit" value="login">
+        <input type="submit" value="createblog">
       </form>
 </div>
 

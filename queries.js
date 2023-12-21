@@ -43,6 +43,30 @@ const createUser = (request, response) => {
         //response.cookie('username', username).redirect('/')
     })
 }
+
+const loginUser = (request, response) => {
+
+    const {username, passwd} = request.body
+
+    console.log("In login function")
+    
+    console.log(username + " " + passwd)
+    
+    pool.query("SELECT * FROM users WHERE username=$1 AND passwd=$2", [username, passwd], (error, results, fields) => {
+        // If there is an issue with the query, output the error
+        if (error) throw error;
+        // If the account exists
+        if (results.rows.length > 0) {
+            // Authenticate the user
+            response.cookie('username', username).redirect('/home');
+        } else {
+            console.log(results)
+            response.send('Incorrect Username and/or Password!');
+        }			
+        response.end();
+    });
+}
+
 /*
 const updateUser = (request, response) => {
   const id = parseInt(request.params.id)
@@ -74,10 +98,6 @@ const deleteUser = (request, response) => {
 module.exports = {
     getPosts,
     getPostsByUser,
-    createUser
-  /*getUsers,
-  getUserById,
-  createUser,
-  updateUser,
-  deleteUser,*/
+    createUser,
+    loginUser
 }
