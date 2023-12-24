@@ -53,7 +53,7 @@
                         const a = document.createElement("a")
                         a.textContent = post.title
                         a.id = post.blogid
-                        a.setAttribute("href", "/post?" + post.blogid)
+                        a.setAttribute("href", "/post?blogid=" + post.blogid)
                         li.appendChild(a)
                         listEl.appendChild(li)
                     }

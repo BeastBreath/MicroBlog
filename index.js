@@ -14,6 +14,8 @@ const db = require('./queries')
 const port = 3000
 var cookieParser = require('cookie-parser');
 
+app.set('view engine', 'ejs')
+
 
 app.use(cookieParser());
 app.use(bodyParser.json())
@@ -38,7 +40,13 @@ app.get('/', (request, response) => {
   console.log('Cookies: ', request.cookies);
 })*/
 
-app.get('/home', function(request, response) {
+
+app.get('/test', (request, response) => {
+  console.log("test")
+  response.render("test", {testvar: "test", logedin: "true"})
+})
+
+app.get('/home2', function(request, response) {
     console.log('Cookies: ', request.cookies);
     const username = request.cookies.username
 
@@ -46,12 +54,17 @@ app.get('/home', function(request, response) {
     //res.send({'username': username})
 });
 
-app.get('/idkyet', function(request, response) {
-    res.render('register', {
-        message: 'User registered!'
-    });
-  });
+app.get('/aboutme', (request, response) => {
+  console.log("About me")
+  db.aboutMePage(req, res);
+})
 
+app.get('/post', (req, res) => {
+  
+
+  db.getPostByID(req, res);
+  
+})
 
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname, '/index.html'));
@@ -61,8 +74,10 @@ app.get('/login', function(req, res) {
     res.sendFile(path.join(__dirname, '/login.html'));
 });
 
-app.get('/signup', function(req, res) {
-    res.cookie('test', 'testing').sendFile(path.join(__dirname, '/signup.html'));
+app.get('/signup', function(request, response) {
+    response.render("test", {testvar: "test", logedin: "true"})
+
+    //res.sendFile(path.join(__dirname, '/signup.html'));
 });
 
 app.post('/signup', (req, res) => {
@@ -76,6 +91,18 @@ app.post('/signup', (req, res) => {
 
     //res.send("success")
     //Add code to add it to the db here
+
+})
+
+
+
+app.get('/createblog', (req, res) => {
+    res.sendFile(path.join(__dirname, '/createblog.html'));
+});
+
+app.post('/createblog', (req, res) => {
+
+    db.createPost(req, res)
 
 })
 

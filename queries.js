@@ -5,8 +5,6 @@
  * 
  */
 
-
-
 const Pool = require('pg').Pool
 const pool = new Pool({
   user: 'postgres',
@@ -36,18 +34,30 @@ const getPostsByUser = (request, response) => {
     })
 }
 
+const getPostByID = (request, response) => {
+
+    pool.query('SELECT * FROM blogposts WHERE blogid=$1',
+    [request.query.blogid], (error, results) => {
+        if (error) {
+            throw error
+        }
+        title = results.rows[0].title
+        response.render("test", {testvar: title})
+    })
+}
+
 const createPost = (request, response) => {
     
-    const {title, msg} = request.body
+    const {title, Message} = request.body
 
     console.log(request.body)
 
     pool.query('INSERT INTO blogposts (title, msg, username) VALUES ($1, $2, $3)',
-    [title, msg, request.cookies.username], (error, results) => {
+    [title, Message, request.cookies.username], (error, results) => {
         if (error) {
             throw error
         }
-        response.status(201).send('User added')
+        response.status(201).send('Blog created')
         //response.cookie('username', username).redirect('/')
     })
 }
@@ -59,13 +69,28 @@ const createUser = (request, response) => {
 
     console.log(request.body)
 
-    pool.query('INSERT INTO users (username, passwd, head, aboutme) VALUES ($1, $2, $3, $4)',
-    [username, passwd, hd, aboutme], (error, results) => {
-        if (error) {
-            throw error
+    pool.query('SELECT * FROM users WHERE username=$1', [username], (error, results) => {
+        if (error) throw error;
+
+        if (results.rows.length > 0) {
+            console.log("username taken")
+            response.send('Username taken').end()
+            return;
         }
-        response.cookie('username', username).status(201).send('User added')
-        //response.cookie('username', username).redirect('/')
+        else {
+
+            pool.query('INSERT INTO users (username, passwd, head, aboutme) VALUES ($1, $2, $3, $4)',
+                [username, passwd, head, aboutme], (error, results) => {
+            if (error) throw error
+                response.cookie('username', username).status(201).send('User added')
+                //response.cookie('username', username).redirect('/')
+            })
+
+            pool.query('INSERT INTO userhistory (head, aboutme, username) VALUES ($1, $2, $3)', 
+                [head, aboutme, username], (error, results) => {
+                    if (error) throw error
+                })
+        }
     })
 }
 
@@ -75,7 +100,7 @@ const loginUser = (request, response) => {
 
     console.log("In login function")
     
-    console.log(username + " " + passwd)
+    console.log(username + " " + passwd)    
     
     pool.query("SELECT * FROM users WHERE username=$1 AND passwd=$2", [username, passwd], (error, results, fields) => {
         // If there is an issue with the query, output the error
@@ -92,11 +117,28 @@ const loginUser = (request, response) => {
     });
 }
 
+const aboutMePage = (req, res) => {
+
+    console.log("in about me page function")
+    console.log(req.cookie)
+    pool.query("SELECT * FROM users WHERE username=$1", [req.cookies.username], (error, results) => {
+        if (error) throw error;
+        
+        console.log(results)
+        head = results.rows[0].head
+        aboutme = results.rows[0].aboutme
+
+        res.render("aboutme", {username: req.cookies.username, head: head, aboutme: aboutme})
+        
+    })
+
+}
+
 const updateUser = (request, response) => {
 
     const {head, aboutme} = request.body
 
-    pool.query("UPDATE users SET head=$1 AND aboutme=$2 WHERE username=$3", [head, aboutme, request.cookie.username], (error, results, fields) => {
+    pool.query("UPDATE users SET head=$1 AND aboutme=$2 WHERE username=$3", [head, aboutme, request.cookies.username], (error, results, fields) => {
         // If there is an issue with the query, output the error
         if (error) throw error;
         // If the account exists
@@ -110,6 +152,8 @@ const updateUser = (request, response) => {
         response.end();
     });
 }
+
+
 
 /*
 const updateUser = (request, response) => {
@@ -145,5 +189,7 @@ module.exports = {
     createPost,
     createUser,
     loginUser,
-    updateUser
+    updateUser,
+    getPostByID,
+    aboutMePage
 }
