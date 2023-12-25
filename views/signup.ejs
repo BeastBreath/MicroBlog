@@ -4,7 +4,7 @@
 
 <html>
 
-<%- include('header', {logedin: false, title: "Sign Up"}) -%>
+<%- include('header', {logedin: logedin, title: "Sign Up"}) -%>
 
 <% if(errorMessage){ %>
     <div class="alert alert-danger" role="alert">

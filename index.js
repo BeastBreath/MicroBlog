@@ -43,7 +43,7 @@ app.get('/', (request, response) => {
 
 app.get('/test', (request, response) => {
   console.log("test")
-  response.render("test", {testvar: "test", logedin: "true"})
+  response.render("test", {testvar: "test", logedin: true})
 })
 
 app.get('/home2', function(request, response) {
@@ -55,8 +55,13 @@ app.get('/home2', function(request, response) {
 });
 
 app.get('/aboutme', (request, response) => {
-  console.log("About me")
-  db.aboutMePage(request, response);
+  if(db.checkLogedIn(request)) {
+    console.log("About me")
+    db.aboutMePage(request, response);
+  }
+  else {
+    response.render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
+  }
 })
 
 app.get('/post', (request, response) => {
@@ -75,7 +80,7 @@ app.get('/', (request, response) => {
   
   console.log(request.cookies)
 
-  if (request.cookies.username !== undefined) {
+  if (db.checkLogedIn(request)) {
     db.getPostsByUser(request, response)
   }
   else {
@@ -85,19 +90,20 @@ app.get('/', (request, response) => {
   
   //console.log(db.getPostsByUser(request, response))
   //response.sendStatus(200).json(db.getPostsByUser(request, response))  
-  //response.render("posts", {logedin: "false", posts: db.getPostsByUser})
+  //response.render("posts", {logedin: false, posts: db.getPostsByUser})
   
   //response.sendFile(path.join(__dirname, '/index.html'));
   });
 
 app.get('/login', function(request, response) {
-    response.render("login", {errorMessage: "", logedin: "false"})
+    response.cookie('username', request.cookies.username, {maxAge: - 10}).render("login", {errorMessage: "", logedin: false})
 
     //response.sendFile(path.join(__dirname, '/login.html'));
 });
 
 app.get('/signup', function(request, response) {
-    response.render("signup", {errorMessage: "", logedin: "true"})
+
+    response.cookie('username', request.cookies.username, {maxAge: - 10}).render("signup", {errorMessage: "", logedin: false})
 
     //response.sendFile(path.join(__dirname, '/signup.html'));
 });
@@ -114,27 +120,41 @@ app.post('/signup', (request, response) => {
 
 
 app.get('/createblog', (request, response) => {
-  if (request.cookies.username !== undefined) {
-    response.render("createpost", {logedin: "true"})
+  if (db.checkLogedIn(request)) {
+    response.render("createpost", {logedin: true})
   }
   else {
-    response.redirect('/login')
+    response.render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
   }
 
 });
 
 app.get('/aboutmehistory', (request, response) => {
-  db.aboutmehistory(request, response)
+  if (db.checkLogedIn(request)) {
+    db.aboutmehistory(request, response)
+  }
+  else {
+    response.render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
+  }
 })
 
 app.post('/createblog', (request, response) => {
-
+  if (db.checkLogedIn(request)) {
     db.createPost(request, response)
+  }
+  else {
+    response.render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
+  }
 
 })
 
 app.get('/changeaboutme', (request, response) => {
-  response.render("changeaboutme", {logedin: "true"})
+  if (db.checkLogedIn(request)) {
+    response.render("changeaboutme", {logedin: true})
+  }
+  else {
+    response.render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
+  }
 })
 
 app.post('/changeaboutme', (request, response) => {

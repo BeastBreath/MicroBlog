@@ -14,12 +14,16 @@ const pool = new Pool({
   port: 5432,
 })
 
+function checkLogedIn (request) {
+    return (request.cookies.username !== undefined)
+}
+
 const getPosts = (request, response) => {
     pool.query('Select * FROM blogposts', (error, results) => {
         if (error) {
             throw error
         }
-        response.render("posts", {logedin: false, posts: results.rows})
+        response.render("posts", {logedin: checkLogedIn(request), posts: results.rows})
     })
 }
 const aboutmehistory = (request, response) => {
@@ -28,7 +32,8 @@ const aboutmehistory = (request, response) => {
         console.log("Beefore")
         console.log(results.rows)
         console.log("afteer")
-        response.render("aboutmehistory", {logedin: "true", history: results.rows})
+        console.log(checkLogedIn(request))
+        response.render("aboutmehistory", {logedin: checkLogedIn(request), history: results.rows})
     })
 }
 
@@ -41,7 +46,7 @@ const getPostsByUser = (request, response) => {
         }
 
         //console.log(results.rows)
-        response.render("posts", {logedin: "true", posts: results.rows})
+        response.render("posts", {logedin: checkLogedIn(request), posts: results.rows})
 
         
     })
@@ -55,8 +60,8 @@ const getPostByID = (request, response) => {
             throw error
         }
         title = results.rows[0].title
-        console.log((request.cookies.username !== undefined))
-        response.render("singlepost", {logedin: (request.cookies.username !== undefined), post: results.rows[0]})
+        console.log(checkLogedIn(request))
+        response.render("singlepost", {logedin: checkLogedIn(request), post: results.rows[0]})
     })
 }
 
@@ -106,7 +111,7 @@ const createUser = (request, response) => {
 
         if (results.rows.length > 0) {
             console.log("username taken")
-            response.render("signup", {errorMessage: "Username Taken", logedin: "true"})
+            response.render("signup", {errorMessage: "Username Taken", logedin: checkLogedIn(request)})
             //response.send('Username taken').end()
             return;
         }
@@ -145,7 +150,7 @@ const loginUser = (request, response) => {
             response.cookie('username', username).redirect('/');
         } else {
             console.log(results)
-            response.render("login", {errorMessage: "Incorrect Username and/or Password!", logedin: "false"})
+            response.render("login", {errorMessage: "Incorrect Username and/or Password!", logedin: checkLogedIn(request)})
         }			
         response.end();
     });
@@ -162,7 +167,7 @@ const aboutMePage = (request, response) => {
         head = results.rows[0].head
         aboutme = results.rows[0].aboutme
 
-        response.render("aboutme", {username: request.cookies.username, logedin: true, head: head, aboutme: aboutme})
+        response.render("aboutme", {username: request.cookies.username, logedin: checkLogedIn(request), head: head, aboutme: aboutme})
         
     })
 
@@ -229,5 +234,6 @@ module.exports = {
     getPostByID,
     aboutMePage,
     changeaboutme,
-    aboutmehistory
+    aboutmehistory,
+    checkLogedIn
 }
