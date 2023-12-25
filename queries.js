@@ -19,17 +19,30 @@ const getPosts = (request, response) => {
         if (error) {
             throw error
         }
-        response.status(200).json(results.rows)
+        response.render("posts", {logedin: false, posts: results.rows})
+    })
+}
+const aboutmehistory = (request, response) => {
+    pool.query('SELECT * FROM userhistory WHERE username=$1', [request.cookies.username], (error, results) => {
+        if (error) throw error
+        console.log("Beefore")
+        console.log(results.rows)
+        console.log("afteer")
+        response.render("aboutmehistory", {logedin: "true", history: results.rows})
     })
 }
 
 const getPostsByUser = (request, response) => {
-    const username = request.params.username
+
+    const username = request.cookies.username
     pool.query('SELECT * FROM blogposts WHERE username=$1', [username], (error, results) => {
         if (error) {
             throw error
         }
-        response.status(200).json(results.rows)
+
+        //console.log(results.rows)
+        response.render("posts", {logedin: "true", posts: results.rows})
+
         
     })
 }
@@ -42,7 +55,8 @@ const getPostByID = (request, response) => {
             throw error
         }
         title = results.rows[0].title
-        response.render("test", {testvar: title})
+        console.log((request.cookies.username !== undefined))
+        response.render("singlepost", {logedin: (request.cookies.username !== undefined), post: results.rows[0]})
     })
 }
 
@@ -57,15 +71,33 @@ const createPost = (request, response) => {
         if (error) {
             throw error
         }
-        response.status(201).send('Blog created')
+        response.status(201).redirect('/')
         //response.cookie('username', username).redirect('/')
     })
 }
 
+
+const changeaboutme = (request, response) => {
+    
+    const {newHeader, newAboutMe} = request.body
+
+    pool.query('UPDATE users SET head=$1, aboutme=$2 WHERE username=$3', [newHeader, newAboutMe, request.cookies.username], (error, results) => {
+        if (error) throw error
+
+    })
+
+    pool.query('INSERT INTO userhistory (head, aboutme, username) VALUES($1, $2, $3)', [newHeader, newAboutMe, request.cookies.username], (error, results) => {
+        if (error) throw error
+        response.status(201).redirect('/aboutme')
+        //response.cookie('username', username).redirect('/')
+    })
+}
+
+
 const createUser = (request, response) => {
     
     console.log("In this function")
-    const {username, passwd, hd, aboutme} = request.body
+    const {username, passwd, head, aboutme} = request.body
 
     console.log(request.body)
 
@@ -74,7 +106,8 @@ const createUser = (request, response) => {
 
         if (results.rows.length > 0) {
             console.log("username taken")
-            response.send('Username taken').end()
+            response.render("signup", {errorMessage: "Username Taken", logedin: "true"})
+            //response.send('Username taken').end()
             return;
         }
         else {
@@ -82,7 +115,6 @@ const createUser = (request, response) => {
             pool.query('INSERT INTO users (username, passwd, head, aboutme) VALUES ($1, $2, $3, $4)',
                 [username, passwd, head, aboutme], (error, results) => {
             if (error) throw error
-                response.cookie('username', username).status(201).send('User added')
                 //response.cookie('username', username).redirect('/')
             })
 
@@ -90,6 +122,8 @@ const createUser = (request, response) => {
                 [head, aboutme, username], (error, results) => {
                     if (error) throw error
                 })
+                
+            response.cookie('username', username).status(201).redirect('/');
         }
     })
 }
@@ -108,33 +142,35 @@ const loginUser = (request, response) => {
         // If the account exists
         if (results.rows.length > 0) {
             // Authenticate the user
-            response.cookie('username', username).redirect('/home');
+            response.cookie('username', username).redirect('/');
         } else {
             console.log(results)
-            response.send('Incorrect Username and/or Password!');
+            response.render("login", {errorMessage: "Incorrect Username and/or Password!", logedin: "false"})
         }			
         response.end();
     });
 }
 
-const aboutMePage = (req, res) => {
+const aboutMePage = (request, response) => {
 
     console.log("in about me page function")
-    console.log(req.cookie)
-    pool.query("SELECT * FROM users WHERE username=$1", [req.cookies.username], (error, results) => {
+    console.log(request.cookie)
+    pool.query("SELECT * FROM users WHERE username=$1", [request.cookies.username], (error, results) => {
         if (error) throw error;
         
         console.log(results)
         head = results.rows[0].head
         aboutme = results.rows[0].aboutme
 
-        res.render("aboutme", {username: req.cookies.username, head: head, aboutme: aboutme})
+        response.render("aboutme", {username: request.cookies.username, logedin: true, head: head, aboutme: aboutme})
         
     })
 
 }
 
 const updateUser = (request, response) => {
+
+    console.log("Updating User")
 
     const {head, aboutme} = request.body
 
@@ -191,5 +227,7 @@ module.exports = {
     loginUser,
     updateUser,
     getPostByID,
-    aboutMePage
+    aboutMePage,
+    changeaboutme,
+    aboutmehistory
 }

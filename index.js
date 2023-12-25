@@ -1,7 +1,7 @@
 /**
  * 
  * Code for the server functions, using express
- * Code calls functions from queries.js and also has all the get and post reqest handeling
+ * Code calls functions from queries.js and also has all the get and post request handeling
  * Made by Nividh Singh
  * 
  */
@@ -24,9 +24,9 @@ app.use(
     extended: true,
   })
 )
-app.use(function(req, res, next) {  
-    res.header('Access-Control-Allow-Origin', req.headers.origin);
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+app.use((request, response, next) => {  
+    response.header('Access-Control-Allow-Origin', request.headers.origin);
+    response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
 
@@ -51,75 +51,112 @@ app.get('/home2', function(request, response) {
     const username = request.cookies.username
 
     response.send('<h1>' + username + '<h1>')
-    //res.send({'username': username})
+    //response.send({'username': username})
 });
 
 app.get('/aboutme', (request, response) => {
   console.log("About me")
-  db.aboutMePage(req, res);
+  db.aboutMePage(request, response);
 })
 
-app.get('/post', (req, res) => {
+app.get('/post', (request, response) => {
   
-
-  db.getPostByID(req, res);
+  db.getPostByID(request, response);
   
 })
 
-app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname, '/index.html'));
+app.get('/logout', (request, response) => {
+  console.log(request.cookies)
+  response.cookie('username', request.cookies.username, {maxAge: - 10}).redirect('/');
+  
+})
+
+app.get('/', (request, response) => {
+  
+  console.log(request.cookies)
+
+  if (request.cookies.username !== undefined) {
+    db.getPostsByUser(request, response)
+  }
+  else {
+    db.getPosts(request, response)
+  }
+
+  
+  //console.log(db.getPostsByUser(request, response))
+  //response.sendStatus(200).json(db.getPostsByUser(request, response))  
+  //response.render("posts", {logedin: "false", posts: db.getPostsByUser})
+  
+  //response.sendFile(path.join(__dirname, '/index.html'));
   });
 
-app.get('/login', function(req, res) {
-    res.sendFile(path.join(__dirname, '/login.html'));
+app.get('/login', function(request, response) {
+    response.render("login", {errorMessage: "", logedin: "false"})
+
+    //response.sendFile(path.join(__dirname, '/login.html'));
 });
 
 app.get('/signup', function(request, response) {
-    response.render("test", {testvar: "test", logedin: "true"})
+    response.render("signup", {errorMessage: "", logedin: "true"})
 
-    //res.sendFile(path.join(__dirname, '/signup.html'));
+    //response.sendFile(path.join(__dirname, '/signup.html'));
 });
 
-app.post('/signup', (req, res) => {
+app.post('/signup', (request, response) => {
 
-    db.createUser(req, res)
+    console.log("Post: Signup")
 
-    let username = req.body.username;
-    let password = req.body.passwd;
-    console.log("HERE")
-    console.log(username + " " + password);
+    db.createUser(request, response)
 
-    //res.send("success")
-    //Add code to add it to the db here
-
+    console.log(request.body.username + " " + request.body.password + " " + request.body.head + " " + request.body.aboutme);
 })
 
 
 
-app.get('/createblog', (req, res) => {
-    res.sendFile(path.join(__dirname, '/createblog.html'));
+app.get('/createblog', (request, response) => {
+  if (request.cookies.username !== undefined) {
+    response.render("createpost", {logedin: "true"})
+  }
+  else {
+    response.redirect('/login')
+  }
+
 });
 
-app.post('/createblog', (req, res) => {
+app.get('/aboutmehistory', (request, response) => {
+  db.aboutmehistory(request, response)
+})
 
-    db.createPost(req, res)
+app.post('/createblog', (request, response) => {
+
+    db.createPost(request, response)
 
 })
 
-app.post('/login', (req, res) => {
-    let username = req.body.username;
-    let password = req.body.passwd;
+app.get('/changeaboutme', (request, response) => {
+  response.render("changeaboutme", {logedin: "true"})
+})
+
+app.post('/changeaboutme', (request, response) => {
+
+  db.changeaboutme(request, response)
+
+})
+
+app.post('/login', (request, response) => {
+    let username = request.body.username;
+    let password = request.body.passwd;
     console.log("HERE2")
     console.log(username + " " + password);
 
-    db.loginUser(req, res)
+    db.loginUser(request, response)
     //Add code to add it to the db here
 })
 
-/*app.get("/posts", async (req, res) => {
+/*app.get("/posts", async (request, response) => {
     const rows = await db.getPosts();
-    res.setHeader("content-type", "application/json")
-    res.send(JSON.stringify(rows))
+    response.setHeader("content-type", "application/json")
+    response.send(JSON.stringify(rows))
 })*/
 
 app.get('/posts', db.getPosts)

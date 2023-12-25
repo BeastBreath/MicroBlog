@@ -4,7 +4,8 @@
 
 <html>
 
-<%- include('header', {logedin: false, title: "Sign Up"}) -%>
+<%- include('header', {logedin: logedin, title: "Log In"}) -%>
+
 
 <% if(errorMessage){ %>
     <div class="alert alert-danger" role="alert">
@@ -12,7 +13,7 @@
     </div>
     
 <% } %> 
-<form action="/signup/" method="post">
+<form action="/login/" method="post">
   <div class="form-group"  padding-top: 100px;>
     <label>Username</label>
     <input type="text" class="form-control" name="username" placeholder="Username" required>
@@ -21,16 +22,8 @@
     <label>Password</label>
     <input type="password" class="form-control" name="passwd" placeholder="Password" required>
   </div>
-  <div class="form-group">
-    <label>Header</label>
-    <input type="text" class="form-control" name="head" placeholder="Header">
-  </div>
-  <div class="form-area">
-    <label>About Me</label>
-    <textarea type="text" class="form-control" name="aboutme" placeholder="About Me" rows="3" maxlength="500"></textarea>
-  </div>
 
-  <button type="submit" value="signup">Sign Up</button>
+  <button type="submit" value="login">Log In</button>
 </form>
 
 </html>
