@@ -41,26 +41,13 @@ app.get('/', (request, response) => {
 })*/
 
 
-app.get('/test', (request, response) => {
-  console.log("test")
-  response.render("test", {testvar: "test", logedin: true})
-})
-
-app.get('/home2', function(request, response) {
-    console.log('Cookies: ', request.cookies);
-    const username = request.cookies.username
-
-    response.send('<h1>' + username + '<h1>')
-    //response.send({'username': username})
-});
-
 app.get('/aboutme', (request, response) => {
   if(db.checkLogedIn(request)) {
     console.log("About me")
     db.aboutMePage(request, response);
   }
   else {
-    response.render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
+    response.status(403).render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
   }
 })
 
@@ -86,26 +73,19 @@ app.get('/', (request, response) => {
   else {
     db.getPosts(request, response)
   }
-
-  
-  //console.log(db.getPostsByUser(request, response))
-  //response.sendStatus(200).json(db.getPostsByUser(request, response))  
-  //response.render("posts", {logedin: false, posts: db.getPostsByUser})
-  
-  //response.sendFile(path.join(__dirname, '/index.html'));
-  });
-
-app.get('/login', function(request, response) {
-    response.cookie('username', request.cookies.username, {maxAge: - 10}).render("login", {errorMessage: "", logedin: false})
-
-    //response.sendFile(path.join(__dirname, '/login.html'));
 });
 
-app.get('/signup', function(request, response) {
 
-    response.cookie('username', request.cookies.username, {maxAge: - 10}).render("signup", {errorMessage: "", logedin: false})
 
-    //response.sendFile(path.join(__dirname, '/signup.html'));
+app.get('/login', (request, response) => {
+    response.status(200).cookie('username', request.cookies.username, {maxAge: - 10}).render("login", {errorMessage: "", logedin: false})
+
+});
+
+app.get('/signup', (request, response) => {
+
+    response.status(200).cookie('username', request.cookies.username, {maxAge: - 10}).render("signup", {errorMessage: "", logedin: false})
+
 });
 
 app.post('/signup', (request, response) => {
@@ -121,10 +101,10 @@ app.post('/signup', (request, response) => {
 
 app.get('/createblog', (request, response) => {
   if (db.checkLogedIn(request)) {
-    response.render("createpost", {logedin: true})
+    response.status(200).render("createpost", {logedin: true})
   }
   else {
-    response.render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
+    response.status(403).render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
   }
 
 });
@@ -134,7 +114,16 @@ app.get('/aboutmehistory', (request, response) => {
     db.aboutmehistory(request, response)
   }
   else {
-    response.render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
+    response.status(403).render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
+  }
+})
+
+app.get('/revert', (request, response) => {
+  if (db.checkLogedIn(request)) {
+    db.revert(request, response)
+  }
+  else {
+    response.status(403).render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
   }
 })
 
@@ -143,7 +132,7 @@ app.post('/createblog', (request, response) => {
     db.createPost(request, response)
   }
   else {
-    response.render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
+    response.status(403).render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
   }
 
 })
@@ -153,7 +142,7 @@ app.get('/changeaboutme', (request, response) => {
     response.render("changeaboutme", {logedin: true})
   }
   else {
-    response.render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
+    response.status(403).render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
   }
 })
 
@@ -173,19 +162,9 @@ app.post('/login', (request, response) => {
     //Add code to add it to the db here
 })
 
-/*app.get("/posts", async (request, response) => {
-    const rows = await db.getPosts();
-    response.setHeader("content-type", "application/json")
-    response.send(JSON.stringify(rows))
-})*/
 
-app.get('/posts', db.getPosts)
-/*
-app.get('/users', db.getUsers)
-app.get('/users/:id', db.getUserById)
-app.post('/users', db.createUser)
-app.put('/users/:id', db.updateUser)
-app.delete('/users/:id', db.deleteUser)*/
+app.get('/allposts', db.getPosts)
+
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)
