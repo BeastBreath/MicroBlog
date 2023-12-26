@@ -24,147 +24,81 @@ app.use(
     extended: true,
   })
 )
-app.use((request, response, next) => {  
-    response.header('Access-Control-Allow-Origin', request.headers.origin);
-    response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
+app.use((request, response, next) => {
+  response.header('Access-Control-Allow-Origin', request.headers.origin);
+  response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
 });
 
-
-/*app.get('/posts', (request, response) => {
-    
-})
-
-app.get('/', (request, response) => {
-  response.json({ info: 'Node.js, Express, and Postgres API' })
-  console.log('Cookies: ', request.cookies);
-})*/
-
-
+//About Me Page
 app.get('/aboutme', (request, response) => {
-  if(db.checkLogedIn(request)) {
-    console.log("About me")
-    db.aboutMePage(request, response);
-  }
-  else {
-    response.status(403).render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
-  }
+  db.checkAccess(request, response, "aboutme")
 })
 
+// Page for Single Post
 app.get('/post', (request, response) => {
-  
   db.getPostByID(request, response);
-  
 })
 
+// Logs user out and redirects them to the home page
 app.get('/logout', (request, response) => {
-  console.log(request.cookies)
-  response.cookie('username', request.cookies.username, {maxAge: - 10}).redirect('/');
-  
+  response.cookie('username', request.cookies.username, { maxAge: - 10 }).redirect('/');
 })
 
+// Page with all the blogs
 app.get('/', (request, response) => {
-  
-  console.log(request.cookies)
-
-  if (db.checkLogedIn(request)) {
-    db.getPostsByUser(request, response)
-  }
-  else {
-    db.getPosts(request, response)
-  }
+  db.checkAccess(request, response, "/");
 });
 
-
-
+// Login Page, also logs user out
 app.get('/login', (request, response) => {
-    response.status(200).cookie('username', request.cookies.username, {maxAge: - 10}).render("login", {errorMessage: "", logedin: false})
-
+  response.status(200).cookie('username', request.cookies.username, { maxAge: - 10 }).render("login", { errorMessage: "", logedin: false });
 });
 
-app.get('/signup', (request, response) => {
-
-    response.status(200).cookie('username', request.cookies.username, {maxAge: - 10}).render("signup", {errorMessage: "", logedin: false})
-
-});
-
-app.post('/signup', (request, response) => {
-
-    console.log("Post: Signup")
-
-    db.createUser(request, response)
-
-    console.log(request.body.username + " " + request.body.password + " " + request.body.head + " " + request.body.aboutme);
-})
-
-
-
-app.get('/createblog', (request, response) => {
-  if (db.checkLogedIn(request)) {
-    response.status(200).render("createpost", {logedin: true})
-  }
-  else {
-    response.status(403).render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
-  }
-
-});
-
-app.get('/aboutmehistory', (request, response) => {
-  if (db.checkLogedIn(request)) {
-    db.aboutmehistory(request, response)
-  }
-  else {
-    response.status(403).render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
-  }
-})
-
-app.get('/revert', (request, response) => {
-  if (db.checkLogedIn(request)) {
-    db.revert(request, response)
-  }
-  else {
-    response.status(403).render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
-  }
-})
-
-app.post('/createblog', (request, response) => {
-  if (db.checkLogedIn(request)) {
-    db.createPost(request, response)
-  }
-  else {
-    response.status(403).render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
-  }
-
-})
-
-app.get('/changeaboutme', (request, response) => {
-  if (db.checkLogedIn(request)) {
-    response.render("changeaboutme", {logedin: true})
-  }
-  else {
-    response.status(403).render("login", {errorMessage: "You need to log in to have access to this page", logedin: false})
-  }
-})
-
-app.post('/changeaboutme', (request, response) => {
-
-  db.changeaboutme(request, response)
-
-})
-
+// Logs user in
 app.post('/login', (request, response) => {
-    let username = request.body.username;
-    let password = request.body.passwd;
-    console.log("HERE2")
-    console.log(username + " " + password);
+  db.loginUser(request, response);
+});
 
-    db.loginUser(request, response)
-    //Add code to add it to the db here
-})
+// Signup Page, also signs user out
+app.get('/signup', (request, response) => {
+  response.status(200).cookie('username', request.cookies.username, { maxAge: - 10 }).render("signup", { errorMessage: "", logedin: false });
+});
 
+// Calls function to sign user up
+app.post('/signup', (request, response) => {
+  db.createUser(request, response);
+});
 
-app.get('/allposts', db.getPosts)
+// Page to make a new blog post
+app.get('/createblog', (request, response) => {
+  db.checkAccess(request, response, "createblog");
+});
 
+// Creates new post
+app.post('/createblog', (request, response) => {
+  db.createPost(request, response);
+});
+
+// Page with about me history
+app.get('/aboutmehistory', (request, response) => {
+  db.checkAccess(request, response, "aboutmehistory");
+});
+
+// Reverts to previous about me
+app.get('/revert', (request, response) => {
+  db.checkAccess(request, response, "revert");
+});
+
+// Page with form to change about me
+app.get('/changeaboutme', (request, response) => {
+  db.checkAccess(request, response, "changeaboutme");
+});
+
+// Change about me section
+app.post('/changeaboutme', (request, response) => {
+  db.changeaboutme(request, response);
+});
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)
