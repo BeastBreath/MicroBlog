@@ -47,7 +47,8 @@ app.get('/post', (request, response) => {
 
 // Logs user out and redirects them to the home page
 app.get('/logout', (request, response) => {
-  response.cookie('username', request.cookies.username, { maxAge: - 10 }).redirect('/');
+  //response.send("<p>logs<p>")
+  response.status(200).clearCookie('username').redirect('/')//cookie('username', request.cookies.username, { maxAge: - 10 }).redirect('/');
 })
 
 // Page with all the blogs
@@ -57,7 +58,7 @@ app.get('/', (request, response) => {
 
 // Login Page, also logs user out
 app.get('/login', (request, response) => {
-  response.status(200).cookie('username', request.cookies.username, { maxAge: - 10 }).render("login", { errorMessage: "", logedin: false });
+  response.status(200).cookie('username', request.cookies.username, { maxAge: - 100 }).render("login", { errorMessage: "", logedin: false });
 });
 
 // Logs user in
@@ -105,8 +106,8 @@ app.post('/changeaboutme', (request, response) => {
   db.changeaboutme(request, response);
 });
 
-/*app.listen(port, () => {
+app.listen(port, () => {
   console.log(`App running on port ${port}.`)
-})*/
+})
 
 module.exports = app;

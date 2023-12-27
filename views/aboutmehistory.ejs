@@ -57,7 +57,9 @@
           <td>
             <%=history[i].aboutme %>
           </td>
-          <td><a type="button" class="btn btn-primary" href=<%="/revert?v=" + history[i].v%>>Revert</a></td>
+          <td>
+            <a type="button" class="btn btn-primary" href=<%="/revert?v=" + history[i].v%>>Revert to <%=i+1%> </a>
+          </td>
         </tr>
         <% } %>
     </tbody>
