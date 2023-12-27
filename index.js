@@ -106,8 +106,8 @@ app.post('/changeaboutme', (request, response) => {
   db.changeaboutme(request, response);
 });
 
-app.listen(port, () => {
+/*app.listen(port, () => {
   console.log(`App running on port ${port}.`)
-})
+})*/
 
 module.exports = app;

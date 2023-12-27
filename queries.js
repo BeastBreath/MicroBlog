@@ -44,7 +44,7 @@ const getPosts = (request, response) => {
     pool.query('SELECT * FROM blogposts', (error, results) => {
         if (error) { throw error; response.status(500); }
 
-        q = 'SELECT * FROM blogposts'
+        var q = 'SELECT * FROM blogposts'
         insertIntoTransactions(q);
 
         response.status(200).render("posts", { logedin: checkLogedIn(request), posts: results.rows })
@@ -57,7 +57,7 @@ const aboutmehistory = (request, response) => {
     pool.query('SELECT * FROM userhistory WHERE username=$1', [request.cookies.username], (error, results) => {
         if (error) { throw error; response.status(500); }
 
-        q = 'SELECT * FROM userhistory WHERE username=' + request.cookies.username
+        var q = 'SELECT * FROM userhistory WHERE username=' + request.cookies.username
         insertIntoTransactions(q);
 
         response.status(200).render("aboutmehistory", { logedin: checkLogedIn(request), history: results.rows })
@@ -71,7 +71,7 @@ const getPostsByUser = (request, response) => {
     pool.query('SELECT * FROM blogposts WHERE username=$1', [username], (error, results) => {
         if (error) { throw error; response.status(500); }
 
-        q = 'SELECT * FROM blogposts WHERE username=' + username
+        var q = 'SELECT * FROM blogposts WHERE username=' + username
         insertIntoTransactions(q);
 
         response.status(200).render("posts", { logedin: checkLogedIn(request), posts: results.rows })
@@ -83,7 +83,7 @@ const getPostByID = (request, response) => {
     pool.query('SELECT * FROM blogposts WHERE blogid=$1', [request.query.blogid], (error, results) => {
         if (error) { throw error; response.status(500); }
 
-        q = 'SELECT * FROM blogposts WHERE blogid=' + request.query.blogid
+        var q = 'SELECT * FROM blogposts WHERE blogid=' + request.query.blogid
         insertIntoTransactions(q);
 
         const title = results.rows[0].title
@@ -99,7 +99,7 @@ const createPost = (request, response) => {
     pool.query('INSERT INTO blogposts (title, msg, username) VALUES ($1, $2, $3)', [title, Message, request.cookies.username], (error, results) => {
         if (error) { throw error; response.status(500); }
 
-        q = 'INSERT INTO blogposts (title, msg, username) VALUES (' + title + ', ' + Message + ', ' + request.cookies.username + ')'
+        var q = 'INSERT INTO blogposts (title, msg, username) VALUES (' + title + ', ' + Message + ', ' + request.cookies.username + ')'
         insertIntoTransactions(q);
 
         response.status(201).redirect('/')
@@ -114,7 +114,7 @@ const changeaboutme = (request, response) => {
     pool.query('UPDATE users SET head=$1, aboutme=$2 WHERE username=$3', [newHeader, newAboutMe, request.cookies.username], (error, results) => {
         if (error) { throw error; response.status(500); }
 
-        q = 'UPDATE users SET head=' + newHeader + ', aboutme=' + newAboutMe + ' WHERE username=' + request.cookies.username
+        var q = 'UPDATE users SET head=' + newHeader + ', aboutme=' + newAboutMe + ' WHERE username=' + request.cookies.username
         insertIntoTransactions(q);
 
     })
@@ -123,7 +123,7 @@ const changeaboutme = (request, response) => {
         if (error) { throw error; response.status(500); }
         response.status(302).redirect('/aboutme')
 
-        q = 'INSERT INTO userhistory (head, aboutme, username) VALUES (' + newHeader + ', ' + newAboutMe + ', ' + request.cookies.username + ')'
+        var q = 'INSERT INTO userhistory (head, aboutme, username) VALUES (' + newHeader + ', ' + newAboutMe + ', ' + request.cookies.username + ')'
         insertIntoTransactions(q);
     })
 
@@ -138,7 +138,7 @@ const createUser = (request, response) => {
     pool.query('SELECT * FROM users WHERE username=$1', [username], (error, results) => {
         if (error) { throw error; response.status(500); }
 
-        q = 'SELECT * FROM users WHERE username=' + username
+        var q = 'SELECT * FROM users WHERE username=' + username
         insertIntoTransactions(q);
 
         if (results.rows.length > 0) {
@@ -151,7 +151,7 @@ const createUser = (request, response) => {
                 [username, passwd, head, aboutme], (error, results) => {
                     if (error) { throw error; response.status(500); }
 
-                    q = 'INSERT INTO users (username, passwd, head, aboutme) VALUES (' + username + ', ' + passwd + ', ' + head + ', ' + aboutme + ')'
+                    var q = 'INSERT INTO users (username, passwd, head, aboutme) VALUES (' + username + ', ' + passwd + ', ' + head + ', ' + aboutme + ')'
                     insertIntoTransactions(q);
 
                 })
@@ -160,11 +160,11 @@ const createUser = (request, response) => {
                 [head, aboutme, username], (error, results) => {
                     if (error) { throw error; response.status(500); }
 
-                    q = 'INSERT INTO userhistory (head, aboutme, username) VALUES (' + head + ', ' + aboutme + ', ' + username + ')'
+                    var q = 'INSERT INTO userhistory (head, aboutme, username) VALUES (' + head + ', ' + aboutme + ', ' + username + ')'
                     insertIntoTransactions(q);
                 })
 
-            response.status(201).cookie('username', username).status(201).redirect('/');
+            response.status(201).cookie('username', username).redirect('/');
         }
     })
 
@@ -178,7 +178,7 @@ const loginUser = (request, response) => {
         // If there is an issue with the query, output the error
         if (error) { throw error; response.status(500); }
 
-        q = 'SELECT * FROM users WHERE username=' + username + ' AND passwd=' + passwd
+        var q = 'SELECT * FROM users WHERE username=' + username + ' AND passwd=' + passwd
         insertIntoTransactions(q);
 
         // If the account exists
@@ -197,7 +197,7 @@ const aboutMePage = (request, response) => {
     pool.query("SELECT * FROM users WHERE username=$1", [request.cookies.username], (error, results) => {
         if (error) { throw error; response.status(500); }
 
-        q = 'SELECT * FROM users WHERE username=' + request.cookies.username
+        var q = 'SELECT * FROM users WHERE username=' + request.cookies.username
         insertIntoTransactions(q);
 
         const head = results.rows[0].head
@@ -216,7 +216,7 @@ const updateUser = (request, response) => {
 
         if (error) { throw error; response.status(500); }
 
-        q = 'UPDATE users SET head=' + head + ' AND aboutme=' + aboutme + ' WHERE USERNAME=' + request.cookies.username
+        var q = 'UPDATE users SET head=' + head + ' AND aboutme=' + aboutme + ' WHERE USERNAME=' + request.cookies.username
         insertIntoTransactions(q);
 
         if (results.rows.length > 0) {
@@ -233,7 +233,7 @@ const revert = (request, response) => {
     pool.query('SELECT * FROM userhistory WHERE v=$1', [request.query.v], (error, results) => {
         if (error) { throw error; response.status(500); }
 
-        q = 'SELECT * FROM userhistory WHERE v=' + request.query.v
+        var q = 'SELECT * FROM userhistory WHERE v=' + request.query.v
         insertIntoTransactions(q);
 
         const head = results.rows[0].head
@@ -243,14 +243,14 @@ const revert = (request, response) => {
         pool.query('UPDATE users SET head=$1, aboutme=$2 WHERE username=$3', [head, aboutme, username], (error) => {
             if (error) { throw error; response.status(500); }
 
-            q = 'UPDATE users SET head=' + newHeader + ', aboutme=' + newAboutMe + ' WHERE username=' + request.cookies.username
+            var q = 'UPDATE users SET head=' + head + ', aboutme=' + aboutme + ' WHERE username=' + request.cookies.username
             insertIntoTransactions(q);
 
         })
         pool.query('INSERT INTO userhistory (head, aboutme, username) VALUES ($1, $2, $3)', [head, aboutme, username], (error) => {
             if (error) { throw error; response.status(500); }
 
-            q = 'INSERT INTO userhistory (head, aboutme, username) VALUES (' + head + ', ' + aboutme + ', ' + username + ')'
+            var q = 'INSERT INTO userhistory (head, aboutme, username) VALUES (' + head + ', ' + aboutme + ', ' + username + ')'
             insertIntoTransactions(q);
         })
         response.status(200).render("aboutme", { username: username, logedin: checkLogedIn(request), head: head, aboutme: aboutme })

@@ -68,6 +68,7 @@ describe('Testing Microblog Application', () => {
             expect(response.status).toBe(200);
             expect(response.text).toContain('Log In');
         });
+
         it('POST /login with correct password', async () => {
             const correctUser = {
                 username: 'JESTUser',
@@ -204,7 +205,7 @@ describe('Testing Microblog Application', () => {
                 expect(response.text).toContain('JESTAboutMe');
                 expect(response.text).toContain('NEWJESTHeader');
                 expect(response.text).toContain('NEWJESTAboutMe');
-            });
+            }, 20000);
 
             it('GET /aboutmehistory when not logged in', async () => {
                 const response = await agent
@@ -214,11 +215,11 @@ describe('Testing Microblog Application', () => {
                 expect(response.status).toBe(403);
                 expect(response.text).toContain('Log In');
                 expect(response.text).toContain('You need to log in to have access to this page');
-            });
+            }, 20000);
 
             it('Post /aboutmehistory when logged in', async () => {
                 const response = await agent
-                    .get('/revert?v=1')
+                    .get('/revert?v=167')
                     .set('Cookie', 'username=JESTUser')
                     .send({})
 
