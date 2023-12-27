@@ -30,6 +30,11 @@ app.use((request, response, next) => {
   next();
 });
 
+app.get('/username', (request, response) => {
+  //console.log(request.cookies)
+  response.send("<html><head></head><body><p>" + request.cookies.username + "</p></body></html>")
+})
+
 //About Me Page
 app.get('/aboutme', (request, response) => {
   db.checkAccess(request, response, "aboutme")
@@ -100,8 +105,8 @@ app.post('/changeaboutme', (request, response) => {
   db.changeaboutme(request, response);
 });
 
-app.listen(port, () => {
+/*app.listen(port, () => {
   console.log(`App running on port ${port}.`)
-})
+})*/
 
 module.exports = app;

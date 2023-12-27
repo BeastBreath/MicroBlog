@@ -12,25 +12,23 @@ module.exports = { presets: ['@babel/preset-env'] }
 const request = require('supertest');
 const express = require('express');
 const app = require('../index'); // Update the path to point to your Express app file
+const agent = request.agent(app); // <-- Important
 
-describe('GET /render-page', () => {
-    it('should render the page with "Hello, World!"', () => {
-        const response = request(app).get('/aboutme');
+describe('Test Cookies', () => {
+    it('wrong', async () => {
+        const response = await agent
+            .get('/username')
+            .set('Cookie', 'username=User1')
+            .send({});
 
         expect(response.status).toBe(200);
-        expect(response.text).toContain('about');
+        expect(response.text).toContain('User1');
+    });
+
+    it('Correct one', async () => {
+        const response = await request(app).get('/username').set("Cookie", ['username=user1']);//.set("Cookie", { "username": "user1" });
+
+        expect(response.status).toBe(200);
+        expect(response.text).toContain('user1');
     });
 });
-
-/*describe('Test Functions', () => {
-    test('Create Post if not logged in', () => {
-        const req = { cookies: { 'username': 'user1' } }
-        const res = { text: '', send: function (input) { this.text = input } }
-
-        checkLogedIn(req, res, "aboutmehistory");
-
-        expect(res.text).toContain("login");
-        console.log(res)
-
-    })
-})*/
