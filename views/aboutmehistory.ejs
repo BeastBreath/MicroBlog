@@ -1,51 +1,66 @@
 <!DOCTYPE html>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+  integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 
 <style>
   /* Specify column widths */
-  th:nth-child(1), td:nth-child(1) {
-    width: 10%; /* 30% width for the first column */
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 10%;
+    /* 30% width for the first column */
   }
 
-  th:nth-child(2), td:nth-child(2) {
-    width: 30%; /* 40% width for the second column */
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 30%;
+    /* 40% width for the second column */
   }
 
-  th:nth-child(3), td:nth-child(3) {
-    width: 40%; /* 30% width for the third column */
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 40%;
+    /* 30% width for the third column */
   }
 
-  th:nth-child(4), td:nth-child(4) {
-    width: 15%; /* 30% width for the third column */
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 15%;
+    /* 30% width for the third column */
   }
 </style>
 
 
 <html>
-    <%- include('header', {logedin: logedin, title: "About Me History"}) -%>
-    
-    
+<%- include('header', {logedin: logedin, title: "About Me History" }) -%>
 
-    <table class="table">
-        <thead>
-            <tr>
-              <th scope="col">Version</th>
-              <th scope="col">Header</th>
-              <th scope="col">About Me</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-          <% for(var i = history.length - 1; i >= 0; i--) { %>
-            <tr>
-                <th scope="row"><%=i+1%></th>
-                <td><%=history[i].head %></td>
-                <td><%=history[i].aboutme %></td>
-                <td><a type="button" class="btn btn-primary" href=<%="/revert?v=" + history[i].v%>>Revert</a></td>
-            </tr>
-            <% } %>
-        </tbody>
-    </table>
+
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Version</th>
+        <th scope="col">Header</th>
+        <th scope="col">About Me</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for(var i=history.length - 1; i>= 0; i--) { %>
+        <tr>
+          <th scope="row">
+            <%=i+1%>
+          </th>
+          <td>
+            <%=history[i].head %>
+          </td>
+          <td>
+            <%=history[i].aboutme %>
+          </td>
+          <td><a type="button" class="btn btn-primary" href=<%="/revert?v=" + history[i].v%>>Revert</a></td>
+        </tr>
+        <% } %>
+    </tbody>
+  </table>
 
 </html>
