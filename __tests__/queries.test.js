@@ -219,7 +219,7 @@ describe('Testing Microblog Application', () => {
 
             it('Post /aboutmehistory when logged in', async () => {
                 const response = await agent
-                    .get('/revert?v=167')
+                    .get('/revert?v=175')
                     .set('Cookie', 'username=JESTUser')
                     .send({})
 
