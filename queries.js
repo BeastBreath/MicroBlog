@@ -10,7 +10,7 @@ const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
     database: 'microblog',
-    password: 'sSchool@19',
+    password: '1234',
     port: 5432,
 })
 
