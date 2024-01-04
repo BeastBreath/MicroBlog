@@ -13,8 +13,12 @@ CREATE TABLE blogposts (
 );
 
 CREATE TABLE userhistory (
-	blogid SERIAL NOT NULL PRIMARY KEY,
-	title varchar(100),
-	msg varchar(300),
+	v SERIAL NOT NULL PRIMARY KEY,
+	head varchar(100),
+	aboutme varchar(50),
 	username varchar(30) references users(username)
+);
+
+CREATE TABLE transactions (
+	transaction varchar(1000)
 );
